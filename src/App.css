@@ -1,7 +1,72 @@
+.row {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .country {
     visibility: hidden;
+    text-align: center;
 }
 
 .country.show {
     visibility: visible;
+}
+
+.country .detailed-info {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.country-details {
+    position: relative;
+}
+
+.country-details.first-load .content {
+    opacity: 0;
+}
+
+.flag, .country-details .content {
+    transition: opacity 0.4s ease;
+    opacity: 1;
+}
+
+.loading .flag, .loading .content {
+    opacity: 0.1;
+}
+
+.spinner {
+    width: 90px;
+    transition: opacity 0.4s ease;
+    opacity: 0;
+    position: absolute;
+    left: calc(50% - 45px);
+    top: calc(50% - 45px);
+}
+
+.loading .spinner {
+    opacity: 1;
+}
+
+.Select {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.flag {
+    border: 1px solid #c4c4c4;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+.hide-flag .flag {
+    opacity: 0;
+}
+
+.flag-container {
+    position: relative;
+    height: 77px;
+}
+
+h5 {
+    font-weight: bold;
 }

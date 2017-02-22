@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import spinner from '../ripple.svg'
 
 export class Country extends Component {
 
     constructor (props) {
         super(props)
-        this.state = {
+        this.initialState = {
             loading: false,
             name: '',
             nativeName: '',
@@ -15,17 +16,26 @@ export class Country extends Component {
             languages: [],
             version: 1,
         }
+
+        this.state = Object.assign({}, this.initialState, {firstLoad: true})
+
+    }
+
+    resetState () {
+        this.setState(Object.assign({}, this.initialState, {firstLoad: true}))
     }
 
     componentWillReceiveProps (nextProps) {
-        if (nextProps.countryCode !== this.props.countryCode) {
+        if (nextProps.countryCode === null)
+            this.resetState()
+        else if (nextProps.countryCode !== this.props.countryCode)
             this.loadNewCountry(nextProps.countryCode)
-        }
     }
 
     loadNewCountry (countryCode = this.props.countryCode) {
         this.setState({
             loading: true,
+            firstLoad: false,
         })
         const url = `https://restcountries.eu/rest/v${this.state.version}/alpha/${countryCode}`
         fetch(url)
@@ -43,71 +53,52 @@ export class Country extends Component {
                 }))
             })
             .catch(() => {
-                this.setState({
-                    error: 'An error occured. Please try again later',
-                })
+                this.setState({error: 'An error occured. Please try again later'})
             })
             .then(() => {
-                this.setState({
-                    loading: false,
-                })
+                this.setState({loading: false})
             })
     }
 
     updateVersion (e) {
-        this.setState({
-            version: (e.target.checked) ? 2 : 1,
-        }, this.loadNewCountry)
+        const version = (e.target.checked) ? 2 : 1
+        this.setState({version}, this.loadNewCountry)
     }
 
     render () {
         return (
-            <div>
-                {this.state.loading &&
-                    <h1>Loading</h1>
-                }
+            <div className={'country-details' + (this.state.loading ? ' loading' : '') + (this.state.firstLoad ? ' first-load' : '')}>
+                <img src={spinner} alt='Spinner' className='spinner' />
                 {this.state.error &&
                     <h1 className='error'>{this.state.error}</h1>
                 }
-              <h1>{this.state.name}</h1>
-              <h2>({this.state.nativeName})</h2>
-              <h3>{this.state.subregion}</h3>
-              <h4>domain: {this.state.topLevelDomain}</h4>
-              <div>
-                  <ul>
-                      <li>
-                          Languages:
-                          <ul>
-                              {this.state.languages.map((language, i) => (
-                                  <li key={i}>{(this.state.loadedVersion === 2) ? language.name : language}</li>
-                              ))}
-                          </ul>
-                      </li>
-                      <li>
-                          Timezones:
-                          <ul>
-                              {this.state.timezones.map((timezone, i) => (
-                                  <li key={i}>{timezone}</li>
-                              ))}
-                          </ul>
-                      </li>
-                      <li>
-                          Currencies:
-                          <ul>
-                              {this.state.currencies.map((currency, i) => (
-                                  ((this.state.loadedVersion === 2 &&
-                                       <li key={i}>{currency.code} - {currency.name}</li>
-                                   ) ||
-                                       <li key={i}>{currency}</li>
-                                  )
-                              ))}
-                          </ul>
-                      </li>
-                  </ul>
+                <div className='content'>
+                  <h1>{this.state.name}</h1>
+                  <h2>({this.state.nativeName})</h2>
+                  <h3>{this.state.subregion}</h3>
+                  <h4>domain: {this.state.topLevelDomain}</h4>
+                  <div className='detailed-info'>
+                      <h5>Languages:</h5>
+                      {this.state.languages.map((language, i) => (
+                          <p key={i}>{(this.state.loadedVersion === 2) ? language.name : language}</p>
+                      ))}
+                      <h5>Timezones:</h5>
+                      {this.state.timezones.map((timezone, i) => (
+                          <p key={i}>{timezone}</p>
+                      ))}
+                      <h5>Currencies:</h5>
+                      {this.state.currencies.map((currency, i) => (
+                          ((this.state.loadedVersion === 2 &&
+                               <p key={i}>{currency.code} - {currency.name}</p>
+                           ) ||
+                               <p key={i}>{currency}</p>
+                          )
+                      ))}
+                  </div>
+                  <label>
+                      Use API v2 to get more info (undocumented): <input type='checkbox' onChange={this.updateVersion.bind(this)} />
+                  </label>
               </div>
-              <label>
-                  Use API v2 to get more info (undocumented): <input type='checkbox' onChange={this.updateVersion.bind(this)} />
-              </label>
           </div>
         )
     }

@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import spinner from '../ripple.svg'
 
 export class Image extends Component {
 
@@ -6,39 +7,39 @@ export class Image extends Component {
         super(props)
         this.state = {
             loading: false,
-            showImage: false,
+            hideFlag: true,
         }
     }
 
     imageError () {
         this.setState({
             loading: false,
-            showImage: false,
+            hideFlag: true,
         })
     }
 
     imageLoaded () {
         this.setState({
             loading: false,
-            showImage: true,
+            hideFlag: false,
         })
     }
 
     componentWillReceiveProps (nextProps) {
-        if (nextProps.countryCode !== this.props.countryCode) {
+        if (nextProps.countryCode !== this.props.countryCode)
             this.setState({
                 loading: true,
-                showImage: false,
+                hideFlag: true,
             })
-        }
     }
 
     render () {
         const CC = this.props.countryCode || ''
         const url = CC ? `http://www.geognos.com/api/en/countries/flag/${CC}.png` : ''
         return (
-            <div className={'flag ' + (this.state.showImage ? 'show' : '')}>
-                <img alt='Country flag' src={url} onLoad={this.imageLoaded.bind(this)} onError={this.imageError.bind(this)} />
+            <div className={'flag-container' + (this.state.hideFlag ? ' hide-flag' : '') + (this.state.loading ? ' loading' : '')}>
+                <img alt='Spinner' src={spinner} className='spinner' />
+                <img alt='Country flag' src={url} className='flag' onLoad={this.imageLoaded.bind(this)} onError={this.imageError.bind(this)} />
             </div>
         )
     }
