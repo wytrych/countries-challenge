@@ -1,18 +1,43 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
+import Select from 'react-select'
+import 'react-select/dist/react-select.css';
+
+import { COUNTRIES } from './countries.js'
+import { LIST } from './list.js'
+
+import { Country } from './components/country'
+import { Image } from './components/image'
+
 class App extends Component {
+    constructor (props) {
+        super(props)
+        this.state = {
+            loading: false,
+            countryCode: '',
+            selectedCountry: '',
+        }
+    }
+
+    updateCountry (val) {
+        this.setState({
+            countryCode: COUNTRIES[val.label],
+            selectedCountry: val,
+        })
+    }
+
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+          <div className={this.state.countryCode ? '' : 'show'}>
+              Select a country
+          </div>
+          <div className={'country' + (this.state.countryCode ? ' show' : '')}>
+              <Image countryCode={this.state.countryCode} />
+              <Country countryCode={this.state.countryCode} />
+          </div>
+          <Select name='name' value={this.state.selectedCountry} options={LIST} onChange={this.updateCountry.bind(this)} />
       </div>
     );
   }
